@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel · Pátio</title>
+<meta name="theme-color" content="#183D32">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23183D32'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' text-anchor='middle' fill='%23F5F0E6'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <span class="wordmark">Pátio</span>
+    <button class="btn btn-outline-cream" type="button" id="btn-sair">Sair</button>
+  </div>
+</header>
+
+<main class="dash">
+  <p class="muted" id="dash-loading" role="status">Verificando sua sessão…</p>
+
+  <section class="card wide" id="dash" hidden aria-labelledby="dash-title">
+    <div class="profile">
+      <div class="avatar" id="avatar" aria-hidden="true">
+        <img id="avatar-img" alt="" hidden referrerpolicy="no-referrer">
+        <span id="avatar-initials"></span>
+      </div>
+      <div>
+        <p class="eyebrow">Área do usuário</p>
+        <h1 id="dash-title">Olá</h1>
+        <p class="lead" id="dash-email"></p>
+      </div>
+    </div>
+
+    <dl class="data">
+      <div><dt>Nome</dt><dd id="d-nome"></dd></div>
+      <div><dt>E-mail</dt><dd id="d-email"></dd></div>
+      <div><dt>Acesso por</dt><dd id="d-metodo"></dd></div>
+      <div><dt>E-mail confirmado</dt><dd id="d-confirmado"></dd></div>
+      <div><dt>Conta criada em</dt><dd id="d-criada"></dd></div>
+    </dl>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/painel.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nova senha · Pátio</title>
+<meta name="theme-color" content="#183D32">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23183D32'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' text-anchor='middle' fill='%23F5F0E6'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="shell">
+
+  <aside class="brand">
+    <a class="wordmark" href="index.html">Pátio</a>
+    <div class="brand-copy">
+      <p class="brand-title">Estoque, margem e vendas em um só lugar.</p>
+      <p class="brand-sub">Gestão para revendas de veículos, feita para quem vive de giro e resultado.</p>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="card">
+
+      <!-- Verificando o link -->
+      <section data-state="verificando" aria-live="polite">
+        <h1>Verificando o link</h1>
+        <p class="lead">Só um instante, estamos confirmando sua solicitação.</p>
+      </section>
+
+      <!-- Formulário de nova senha -->
+      <section data-state="form" aria-labelledby="t-nova" hidden>
+        <h1 id="t-nova">Criar nova senha</h1>
+        <p class="lead">Escolha uma senha nova para a sua conta.</p>
+        <p class="msg" role="alert" hidden></p>
+
+        <form class="stack" id="form-nova" novalidate>
+          <div class="field">
+            <label for="nova-senha">Nova senha</label>
+            <div class="input-wrap">
+              <input id="nova-senha" name="password" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres">
+              <button class="eye" type="button" data-toggle="nova-senha" aria-label="Mostrar senha" aria-pressed="false">
+                <svg class="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="i-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+              </button>
+            </div>
+            <p class="hint">Use pelo menos 8 caracteres.</p>
+          </div>
+          <div class="field">
+            <label for="nova-confirma">Confirmar nova senha</label>
+            <div class="input-wrap">
+              <input id="nova-confirma" name="confirm" type="password" autocomplete="new-password" placeholder="Repita a senha">
+              <button class="eye" type="button" data-toggle="nova-confirma" aria-label="Mostrar senha" aria-pressed="false">
+                <svg class="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="i-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+              </button>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" id="btn-nova">Salvar nova senha</button>
+        </form>
+      </section>
+
+      <!-- Sucesso -->
+      <section data-state="sucesso" aria-labelledby="t-ok" hidden>
+        <div class="badge-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </div>
+        <h1 id="t-ok">Senha alterada</h1>
+        <p class="lead">Sua nova senha já está valendo. Por segurança, encerramos o acesso nos outros aparelhos.</p>
+        <div class="stack">
+          <a class="btn btn-primary" href="painel.html">Ir para o painel</a>
+        </div>
+      </section>
+
+      <!-- Link inválido ou expirado -->
+      <section data-state="invalido" aria-labelledby="t-inv" hidden>
+        <h1 id="t-inv">Link inválido ou expirado</h1>
+        <p class="lead" id="invalid-text">Esse link de recuperação não pode mais ser usado. Peça um novo para continuar.</p>
+        <div class="stack">
+          <a class="btn btn-primary" href="index.html#esqueci">Pedir novo link</a>
+        </div>
+        <a class="link back" href="index.html#entrar">&larr; Voltar para entrar</a>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/reset.js"></script>
+</body>
+</html>
