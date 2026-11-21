@@ -114,7 +114,7 @@
     try {
       var res = await sb.auth.signInWithPassword({ email: email, password: password });
       if (res.error) { setMsg(msg, A.translateError(res.error)); setBusy(btn, false); return; }
-      window.location.replace(A.pageUrl('dashboard.html'));
+      window.location.replace(A.pageUrl('inicio.html'));
     } catch (err) {
       setMsg(msg, A.translateError(err));
       setBusy(btn, false);
@@ -169,7 +169,7 @@
       });
       if (res.error) { setMsg(msg, A.translateError(res.error)); setBusy(btn, false); return; }
       if (res.data && res.data.session) {
-        window.location.replace(A.pageUrl('dashboard.html'));
+        window.location.replace(A.pageUrl('inicio.html'));
         return;
       }
       state.signupEmail = email;
@@ -258,7 +258,7 @@
 
   if (sb) {
     sb.auth.getSession().then(function (r) {
-      if (r && r.data && r.data.session) window.location.replace(A.pageUrl('dashboard.html'));
+      if (r && r.data && r.data.session) window.location.replace(A.pageUrl('inicio.html'));
     });
   }
 })();

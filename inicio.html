@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'">
+<title>Pátio · Início</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="inicio/inicio.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<header class="bar">
+  <a class="brand" href="inicio.html" aria-label="Pátio, página inicial"><span class="logo" aria-hidden="true"></span><b>Pátio</b></a>
+  <div class="bar-r">
+    <button type="button" class="pill" id="help-btn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5M12 16.8h.01"/></svg><span>Central de ajuda</span></button>
+    <div class="me"><span class="av" id="av">U</span><span class="me-n" id="me-n">Usuário</span></div>
+    <button type="button" class="pill ghost" id="btn-sair">Sair</button>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <section class="hero" aria-labelledby="hello">
+    <p class="eyebrow" id="today"></p>
+    <h1 id="hello">Olá</h1>
+    <p class="lead">Tudo da sua loja em um só lugar. Escolha por onde começar.</p>
+    <ul class="legend" aria-label="Legenda dos módulos">
+      <li><i class="dot ok"></i>Disponível</li><li><i class="dot lock"></i>Sem acesso</li><li><i class="dot off"></i>Não contratado</li><li><i class="dot soon"></i>Em breve</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-main">
+    <div class="sec-h"><h2 id="h-main">Seus módulos</h2><span class="muted">Acesso rápido ao que você mais usa</span></div>
+    <div class="featured" id="featured"></div>
+  </section>
+
+  <section aria-labelledby="h-more">
+    <div class="sec-h"><h2 id="h-more">Mais módulos</h2><span class="muted">Amplie a plataforma conforme a loja cresce</span></div>
+    <div class="more" id="more"></div>
+  </section>
+
+  <footer class="foot muted">Pátio · plataforma de gestão para lojas de veículos</footer>
+</main>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-p">
+    <button type="button" class="x" data-close aria-label="Fechar">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth-guard.js"></script>
+<script src="inicio/inicio.js"></script>
+</body>
+</html>

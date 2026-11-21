@@ -60,7 +60,7 @@
     return sb.auth.getUser().then(function (u) {
       if (u.error || !u.data || !u.data.user) { return sb.auth.signOut().then(function () { toLogin(); }); }
       // Depois do login (inclusive Google e link de confirmação) segue para o Pátio.
-      window.location.replace(A.pageUrl('dashboard.html'));
+      window.location.replace(A.pageUrl('inicio.html'));
     });
   }).catch(function () { toLogin(); });
 
