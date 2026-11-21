@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'">
+<title>Pátio · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard/dashboard.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="side" id="side" aria-label="Menu principal">
+    <a class="brand" href="dashboard.html"><span class="logo" aria-hidden="true">P</span><span>Pátio<small>Gestão automotiva</small></span></a>
+    <nav>
+      <a class="nav on" href="dashboard.html" aria-current="page"><span class="ic">▦</span>Dashboard</a>
+      <a class="nav" href="patio.html"><span class="ic">▤</span>Estoque</a>
+      <div class="nav-h">Em breve</div>
+      <span class="nav soon"><span class="ic">◎</span>Avaliações</span>
+      <span class="nav soon"><span class="ic">◈</span>Leads e CRM</span>
+      <span class="nav soon"><span class="ic">◆</span>Vendas</span>
+      <span class="nav soon"><span class="ic">◐</span>Financeiro</span>
+      <span class="nav soon"><span class="ic">▥</span>Relatórios</span>
+    </nav>
+    <div class="side-foot"><div class="user"><span class="av" id="user-av">U</span><span class="user-n" id="user-name">Usuário</span></div></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="content">
+    <header class="top">
+      <button class="icon-btn menu" id="menu-btn" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="side">☰</button>
+      <div class="top-t"><h1>Dashboard Executivo</h1><p id="period-sub" class="muted"></p></div>
+      <div class="filters">
+        <label class="fld"><span>Período</span><select id="f-period"></select></label>
+        <span id="custom-range" class="fld-range" hidden><label class="fld"><span>De</span><input id="f-from" type="date"></label><label class="fld"><span>Até</span><input id="f-to" type="date"></label></span>
+        <label class="fld"><span>Unidade</span><select id="f-unit"></select></label>
+        <button class="btn" id="refresh" type="button" title="Recalcular indicadores">Atualizar</button>
+        <button class="btn ghost" id="btn-sair" type="button">Sair</button>
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="badge-row"><span class="badge" id="data-badge"></span><span class="muted small">Valores fictícios para demonstração · pronto para conectar ao banco de dados</span></div>
+
+      <section aria-labelledby="h-kpi"><h2 id="h-kpi" class="sr">Indicadores principais</h2><div class="grid4" id="kpis"></div></section>
+
+      <div class="grid2">
+        <section class="card pad" aria-labelledby="h-stock"><div class="sh"><h2 id="h-stock">Estoque e giro</h2></div><div id="stock"></div></section>
+        <section class="card pad" aria-labelledby="h-pend"><div class="sh"><h2 id="h-pend">Pendências</h2><span class="muted small">Situação atual</span></div><div id="pend" class="pends"></div></section>
+      </div>
+
+      <section class="card pad" aria-labelledby="h-av">
+        <div class="sh"><h2 id="h-av">Avaliações e movimentações</h2></div>
+        <div id="avals" class="tiles five"></div>
+        <div class="grid2 inner">
+          <div><h4>Entradas e saídas</h4><div id="flow"></div></div>
+          <div><h4>Últimos veículos movimentados</h4><div id="moves"></div></div>
+        </div>
+      </section>
+
+      <div class="grid2">
+        <section class="card pad" aria-labelledby="h-fn"><div class="sh"><h2 id="h-fn">Funil de vendas</h2></div><div id="funnel"></div></section>
+        <section class="card pad" aria-labelledby="h-or"><div class="sh"><h2 id="h-or">Leads por origem</h2></div><div id="origins" class="origins"></div></section>
+      </div>
+
+      <section class="card pad" aria-labelledby="h-sl"><div class="sh"><h2 id="h-sl">Ranking de vendedores</h2><span class="muted small">Clique no cabeçalho para ordenar</span></div><div id="sellers" class="scroll"></div></section>
+
+      <section class="card pad" aria-labelledby="h-pf"><div class="sh"><h2 id="h-pf">Lucro por veículo</h2><span class="muted small">Maiores lucros brutos do período</span></div><div id="profit"></div></section>
+
+      <section class="card pad" aria-labelledby="h-fi">
+        <div class="sh"><h2 id="h-fi">Financeiro</h2></div>
+        <div id="fin" class="tiles three"></div>
+        <h4>Ranking por banco</h4><div id="banks"></div>
+      </section>
+      <footer class="foot muted small">Pátio · Dashboard Executivo · primeira etapa</footer>
+    </main>
+  </div>
+</div>
+
+<div class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dr-title">
+  <div class="drawer-bg" data-close></div>
+  <div class="drawer-p">
+    <header><div><h3 id="dr-title" data-title></h3><p class="muted small" data-sub></p></div><button type="button" class="icon-btn" data-close aria-label="Fechar">✕</button></header>
+    <div class="drawer-bar"><span class="muted small" data-count></span><button type="button" class="btn" data-csv>Exportar CSV</button></div>
+    <div class="scroll drawer-body"><table class="tbl" data-table></table></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth-guard.js"></script>
+<script src="dashboard/data-demo.js"></script>
+<script src="dashboard/metrics.js"></script>
+<script src="dashboard/ui.js"></script>
+<script src="dashboard/charts.js"></script>
+<script src="dashboard/app.js"></script>
+<script src="dashboard/boot.js"></script>
+</body>
+</html>

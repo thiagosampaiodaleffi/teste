@@ -179,6 +179,7 @@ input[type=file]{padding:7px;font-size:14px}
   .card{transition:border-color .15s}
   .card:hover{border-color:var(--accent)}
 }
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .top-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 </style>
 
@@ -192,6 +193,7 @@ input[type=file]{padding:7px;font-size:14px}
     </div>
     <div class="top-actions">
       <button class="btn primary" id="btn-new" type="button">+ Novo veículo</button>
+      <a class="btn" href="dashboard.html">Dashboard</a>
       <button class="btn" id="btn-sair" type="button">Sair</button>
     </div>
   </header>
@@ -683,6 +685,7 @@ renderAll();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="supabase-client.js"></script>
+<script src="auth-guard.js"></script>
 <script src="patio-guard.js"></script>
 </body>
 </html>
