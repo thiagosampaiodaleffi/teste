@@ -59,7 +59,8 @@
     // Confirma com o servidor que o usuário ainda existe e a sessão é válida.
     return sb.auth.getUser().then(function (u) {
       if (u.error || !u.data || !u.data.user) { return sb.auth.signOut().then(function () { toLogin(); }); }
-      fill(u.data.user);
+      // Depois do login (inclusive Google e link de confirmação) segue para o Pátio.
+      window.location.replace(A.pageUrl('patio.html'));
     });
   }).catch(function () { toLogin(); });
 

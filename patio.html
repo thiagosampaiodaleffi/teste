@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>html:not(.auth-ok) body{visibility:hidden}</style>
+<title>Pátio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: cabeçalho, faixa de resumo, filtros e uma grade de cartões de veículos. Formulário em painel sobreposto. */
+:root{
+  --bg:#eef2f2; --surface:#ffffff; --surface-2:#f4f7f7; --fg:#13211f; --muted:#5b6b69; --line:#d8e0df;
+  --accent:#0b6b63; --accent-fg:#ffffff; --accent-soft:#d9eeeb;
+  --good:#1b7a3d; --good-soft:#dcf1e3;
+  --warn:#9a5b00; --warn-soft:#fbecd0;
+  --bad:#b3261e; --bad-soft:#fbe1de;
+  --info:#2457a6; --info-soft:#dfe9f8;
+  --scrim:rgba(10,20,19,.55);
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1615; --surface:#141f1e; --surface-2:#1a2827; --fg:#e6efed; --muted:#93a6a3; --line:#2a3b39;
+    --accent:#3cc4b4; --accent-fg:#06201d; --accent-soft:#123532;
+    --good:#5fd08a; --good-soft:#14301f;
+    --warn:#f0b955; --warn-soft:#3a2c0f;
+    --bad:#ff8a80; --bad-soft:#3d1a17;
+    --info:#8db4f0; --info-soft:#172a47;
+    --scrim:rgba(0,0,0,.65);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1615; --surface:#141f1e; --surface-2:#1a2827; --fg:#e6efed; --muted:#93a6a3; --line:#2a3b39;
+  --accent:#3cc4b4; --accent-fg:#06201d; --accent-soft:#123532;
+  --good:#5fd08a; --good-soft:#14301f;
+  --warn:#f0b955; --warn-soft:#3a2c0f;
+  --bad:#ff8a80; --bad-soft:#3d1a17;
+  --info:#8db4f0; --info-soft:#172a47;
+  --scrim:rgba(0,0,0,.65);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg); font-family:var(--font-body); font-size:15px; line-height:1.45;
+  padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--font-display);margin:0;text-wrap:balance}
+h1{font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.sub{margin:2px 0 0;color:var(--muted);font-size:14px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);
+  color:var(--fg);font-weight:500;cursor:pointer;font-size:14px;line-height:1.2;
+}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.btn.primary:hover{filter:brightness(1.06);background:var(--accent)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.danger.armed{background:var(--bad);color:var(--surface);border-color:var(--bad)}
+.btn.small{padding:6px 10px;font-size:13px}
+
+.note{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;
+  background:var(--info-soft);color:var(--info);border-radius:var(--radius);padding:10px 14px;font-size:14px;
+}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note .btn{background:transparent;color:inherit;border-color:currentColor}
+
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px 24px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;
+}
+.stat{min-width:0}
+.stat .l{display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.stat strong{display:block;font-family:var(--font-display);font-size:23px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.25}
+.stat small{display:block;color:var(--muted);font-size:12px}
+.pos{color:var(--good)} .neg{color:var(--bad)} .alert{color:var(--warn)}
+
+.tools{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.field-label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.search{flex:1 1 260px;min-width:0}
+.sort{flex:0 1 210px;min-width:0}
+input,select,textarea{
+  width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  font-size:16px;min-width:0;
+}
+textarea{resize:vertical;min-height:70px}
+input[type=file]{padding:7px;font-size:14px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;
+  padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer;
+}
+.chip b{font-weight:600;color:var(--muted);margin-left:4px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.chip[aria-pressed="true"] b{color:inherit;opacity:.85}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.photo{position:relative;aspect-ratio:16/10;max-width:100%;background:var(--surface-2);display:grid;place-items:center;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ph{font-family:var(--font-display);font-size:30px;font-weight:700;color:var(--muted);opacity:.55;letter-spacing:.02em;padding:0 12px;text-align:center}
+.pill{position:absolute;top:10px;left:10px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.s-preparacao{background:var(--warn-soft);color:var(--warn)}
+.s-avenda{background:var(--good-soft);color:var(--good)}
+.s-reservado{background:var(--info-soft);color:var(--info)}
+.s-vendido{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.cbody{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1;min-width:0}
+.card h3{font-size:18px;font-weight:600;line-height:1.2}
+.ver{margin:2px 0 0;color:var(--muted);font-size:13px}
+.specs{margin:0;font-size:13px;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.plate{display:inline-flex;flex-direction:column;align-items:center;border:1.5px solid #1b1b1b;border-radius:5px;overflow:hidden;background:#fff;color:#111}
+.plate-top{background:#1f4aa8;color:#fff;font-size:7px;letter-spacing:.16em;padding:1px 10px;width:100%;text-align:center;font-weight:600}
+.plate-no{font-family:var(--font-mono);font-size:15px;letter-spacing:.08em;padding:1px 10px 2px}
+.days{font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.days.d60{background:var(--warn-soft);color:var(--warn)}
+.days.d90{background:var(--bad-soft);color:var(--bad)}
+.money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding-top:10px;border-top:1px solid var(--line)}
+.money dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.money dd{margin:0;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.money dd small{display:block;font-weight:500;font-size:11px;opacity:.85}
+.foot{display:flex;gap:8px;margin-top:auto;align-items:center}
+.foot select{flex:1;font-size:14px;padding:7px 8px}
+
+.empty{
+  grid-column:1/-1;text-align:center;padding:48px 16px;background:var(--surface);
+  border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.empty h2{font-size:18px;color:var(--fg)}
+.empty p{margin:0;max-width:44ch}
+.foot-note{color:var(--muted);font-size:12px;margin:4px 0 0}
+
+.overlay{
+  position:fixed;inset:0;background:var(--scrim);z-index:50;display:flex;align-items:flex-start;justify-content:center;
+  overflow:auto;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+}
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;width:100%;max-width:660px;
+  padding:20px;display:flex;flex-direction:column;gap:16px;margin:auto 0;
+}
+.panel h2{font-size:21px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.span2{grid-column:1/-1}
+.photo-field{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.foto-prev{width:112px;aspect-ratio:16/10;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;display:grid;place-items:center;color:var(--muted);font-size:12px}
+.foto-prev img{width:100%;height:100%;object-fit:cover}
+.photo-field .pick{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.margin-line{background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:14px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px}
+.margin-line strong{font-variant-numeric:tabular-nums}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center}
+.actions .spacer{flex:1}
+
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:60;
+  max-width:calc(100% - 32px);box-shadow:0 6px 24px rgba(0,0,0,.25);
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){
+  .card{transition:border-color .15s}
+  .card:hover{border-color:var(--accent)}
+}
+.top-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Pátio</h1>
+      <p class="sub">Estoque de veículos da revenda</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" id="btn-new" type="button">+ Novo veículo</button>
+      <button class="btn" id="btn-sair" type="button">Sair</button>
+    </div>
+  </header>
+
+  <div id="notes"></div>
+  <section class="stats" id="stats" aria-label="Resumo do estoque"></section>
+
+  <section class="tools">
+    <div class="search">
+      <label class="field-label" for="q">Buscar</label>
+      <input id="q" type="search" placeholder="Marca, modelo, cor ou placa" autocomplete="off">
+    </div>
+    <div class="sort">
+      <label class="field-label" for="sort">Ordenar por</label>
+      <select id="sort">
+        <option value="recentes">Entrada mais recente</option>
+        <option value="parados">Mais tempo parado</option>
+        <option value="preco-asc">Menor preço</option>
+        <option value="preco-desc">Maior preço</option>
+        <option value="margem">Maior margem</option>
+      </select>
+    </div>
+  </section>
+
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por situação"></div>
+  <main class="grid" id="grid"></main>
+  <p class="foot-note">Os dados ficam salvos somente neste navegador. Fotos são reduzidas automaticamente para ocupar pouco espaço.</p>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <form class="panel" id="form" role="dialog" aria-modal="true" aria-labelledby="form-title">
+    <h2 id="form-title">Novo veículo</h2>
+
+    <div class="photo-field">
+      <div class="foto-prev" id="foto-prev">Sem foto</div>
+      <div class="pick">
+        <label class="field-label" for="f-foto">Foto principal (opcional)</label>
+        <input type="file" id="f-foto" accept="image/*">
+        <button type="button" class="btn small" id="foto-remove" hidden>Remover foto</button>
+      </div>
+    </div>
+
+    <div class="fields">
+      <div><label class="field-label" for="f-marca">Marca</label><input id="f-marca" required autocomplete="off" placeholder="Ex.: Fiat"></div>
+      <div><label class="field-label" for="f-modelo">Modelo</label><input id="f-modelo" required autocomplete="off" placeholder="Ex.: Argo"></div>
+      <div class="span2"><label class="field-label" for="f-versao">Versão</label><input id="f-versao" autocomplete="off" placeholder="Ex.: Drive 1.3 Flex"></div>
+      <div><label class="field-label" for="f-anoFab">Ano de fabricação</label><input id="f-anoFab" type="number" inputmode="numeric" min="1950" max="2100" step="1"></div>
+      <div><label class="field-label" for="f-anoMod">Ano do modelo</label><input id="f-anoMod" type="number" inputmode="numeric" min="1950" max="2100" step="1"></div>
+      <div><label class="field-label" for="f-cor">Cor</label><input id="f-cor" autocomplete="off"></div>
+      <div><label class="field-label" for="f-km">Quilometragem</label><input id="f-km" type="number" inputmode="numeric" min="0" step="1"></div>
+      <div><label class="field-label" for="f-placa">Placa</label><input id="f-placa" maxlength="8" autocomplete="off" placeholder="ABC1D23"></div>
+      <div><label class="field-label" for="f-combustivel">Combustível</label>
+        <select id="f-combustivel"><option>Flex</option><option>Gasolina</option><option>Etanol</option><option>Diesel</option><option>Híbrido</option><option>Elétrico</option></select></div>
+      <div><label class="field-label" for="f-cambio">Câmbio</label>
+        <select id="f-cambio"><option>Manual</option><option>Automático</option><option>CVT</option><option>Automatizado</option></select></div>
+      <div><label class="field-label" for="f-custo">Custo de compra (R$)</label><input id="f-custo" type="number" inputmode="decimal" min="0" step="100"></div>
+      <div><label class="field-label" for="f-preparo">Preparação (R$)</label><input id="f-preparo" type="number" inputmode="decimal" min="0" step="50"></div>
+      <div><label class="field-label" for="f-preco">Preço de venda (R$)</label><input id="f-preco" type="number" inputmode="decimal" min="0" step="100"></div>
+      <div><label class="field-label" for="f-status">Situação</label>
+        <select id="f-status">
+          <option value="preparacao">Em preparação</option>
+          <option value="avenda">À venda</option>
+          <option value="reservado">Reservado</option>
+          <option value="vendido">Vendido</option>
+        </select></div>
+      <div><label class="field-label" for="f-entrada">Data de entrada</label><input id="f-entrada" type="date" required></div>
+      <div class="span2"><label class="field-label" for="f-obs">Observações</label><textarea id="f-obs" placeholder="Detalhes de revisão, documentos, avarias..."></textarea></div>
+    </div>
+
+    <div class="margin-line" id="margin-line" aria-live="polite"></div>
+
+    <div class="actions">
+      <button type="button" class="btn danger" id="btn-del" hidden>Excluir</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btn-cancel">Cancelar</button>
+      <button type="submit" class="btn primary" id="btn-save">Salvar veículo</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+window.__bootPatio = function(){
+'use strict';
+
+var KEY = 'patio.v1.' + ((window.PATIO_USER && window.PATIO_USER.id) || 'anon');
+var STATUS = {preparacao:'Em preparação', avenda:'À venda', reservado:'Reservado', vendido:'Vendido'};
+var FIELDS = ['marca','modelo','versao','anoFab','anoMod','cor','km','placa','combustivel','cambio','custo','preparo','preco','status','entrada','obs'];
+var NUMERIC = {anoFab:1, anoMod:1, km:1, custo:1, preparo:1, preco:1};
+
+var state = {items:[], q:'', status:'estoque', sort:'recentes', editing:null, confirmDel:false, storageOk:true};
+var tmpFoto = '';
+var lastFocus = null;
+var toastTimer = null;
+
+var brl = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
+var num = new Intl.NumberFormat('pt-BR', {maximumFractionDigits:1});
+var int = new Intl.NumberFormat('pt-BR', {maximumFractionDigits:0});
+
+function $(id){ return document.getElementById(id); }
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function norm(s){ return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function dateStr(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function daysAgoStr(n){ return dateStr(new Date(Date.now() - n*864e5)); }
+
+function cost(v){ return (+v.custo || 0) + (+v.preparo || 0); }
+function margin(v){ return (+v.preco || 0) - cost(v); }
+function days(v){
+  if(!v.entrada) return 0;
+  var t = new Date(v.entrada + 'T12:00:00').getTime();
+  if(isNaN(t)) return 0;
+  return Math.max(0, Math.floor((Date.now() - t) / 864e5));
+}
+
+function seed(){
+  function car(marca, modelo, versao, anoFab, anoMod, cor, km, placa, comb, cambio, custo, preparo, preco, status, dias){
+    return {id:uid(), marca:marca, modelo:modelo, versao:versao, anoFab:anoFab, anoMod:anoMod, cor:cor, km:km,
+      placa:placa, combustivel:comb, cambio:cambio, custo:custo, preparo:preparo, preco:preco, status:status,
+      entrada:daysAgoStr(dias), obs:'', foto:'', exemplo:true};
+  }
+  return [
+    car('Fiat','Argo','Drive 1.3',2021,2022,'Branco',38400,'RJB4F21','Flex','Manual',54000,1800,62900,'avenda',23),
+    car('Volkswagen','T-Cross','200 TSI',2020,2020,'Cinza',52100,'QXT2C08','Flex','Automático',88000,2400,99900,'avenda',71),
+    car('Chevrolet','Onix','LT 1.0',2019,2019,'Prata',61900,'SBN7H55','Flex','Manual',45500,1200,52900,'preparacao',4),
+    car('Toyota','Corolla','XEi 2.0',2018,2019,'Preto',74300,'PLK1E90','Flex','CVT',91000,2900,103900,'reservado',12),
+    car('Hyundai','HB20','Comfort 1.0',2020,2020,'Vermelho',44800,'RDM6A34','Flex','Manual',52500,900,58900,'avenda',96),
+    car('Jeep','Compass','Longitude 1.3 T270',2021,2021,'Branco',41000,'QWE9B12','Flex','Automático',118000,3100,134900,'avenda',35),
+    car('Honda','Civic','EXL 2.0',2017,2017,'Prata',88700,'RFV3D77','Flex','CVT',83000,2100,91900,'vendido',40),
+    car('Fiat','Strada','Freedom CD 1.3',2022,2022,'Azul',29500,'SAC5G46','Flex','Manual',79000,1500,88900,'avenda',9)
+  ];
+}
+
+function load(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var d = JSON.parse(raw);
+      if(Array.isArray(d)) return d;
+    }
+  }catch(e){}
+  return null;
+}
+function save(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(state.items));
+    state.storageOk = true;
+  }catch(e){
+    state.storageOk = false;
+  }
+  renderNotes();
+  return state.storageOk;
+}
+
+function toast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.hidden = true; }, 2800);
+}
+
+/* ---------- renderização ---------- */
+function renderNotes(){
+  var html = '';
+  if(state.items.some(function(v){ return v.exemplo; })){
+    html += '<div class="note">Os veículos marcados abaixo são exemplos para você ver o sistema funcionando. ' +
+      '<button type="button" class="btn small" id="clear-ex">Remover exemplos</button></div>';
+  }
+  if(!state.storageOk){
+    html += '<div class="note warn">Não foi possível salvar neste navegador (espaço cheio ou armazenamento bloqueado). ' +
+      'As alterações valem só até você fechar a página. Remover fotos libera espaço.</div>';
+  }
+  $('notes').innerHTML = html;
+}
+
+function renderStats(){
+  var a = state.items.filter(function(v){ return v.status !== 'vendido'; });
+  var inv = a.reduce(function(s,v){ return s + cost(v); }, 0);
+  var val = a.reduce(function(s,v){ return s + (+v.preco || 0); }, 0);
+  var mg = val - inv;
+  var old = a.filter(function(v){ return days(v) >= 60; }).length;
+  var pct = val > 0 ? num.format(mg / val * 100) + '% do valor de venda' : 'sem preços ainda';
+  $('stats').innerHTML =
+    '<div class="stat"><span class="l">No pátio</span><strong>' + a.length + '</strong><small>veículos não vendidos</small></div>' +
+    '<div class="stat"><span class="l">Capital parado</span><strong>' + brl.format(inv) + '</strong><small>compra + preparação</small></div>' +
+    '<div class="stat"><span class="l">Valor de venda</span><strong>' + brl.format(val) + '</strong><small>soma dos preços</small></div>' +
+    '<div class="stat"><span class="l">Margem prevista</span><strong class="' + (mg < 0 ? 'neg' : 'pos') + '">' + brl.format(mg) + '</strong><small>' + pct + '</small></div>' +
+    '<div class="stat"><span class="l">Parados há 60+ dias</span><strong class="' + (old ? 'alert' : '') + '">' + old + '</strong><small>pedem ação de preço</small></div>';
+}
+
+function renderChips(){
+  var defs = [['estoque','Em estoque'],['preparacao','Em preparação'],['avenda','À venda'],['reservado','Reservado'],['vendido','Vendido'],['todos','Todos']];
+  function count(k){
+    if(k === 'todos') return state.items.length;
+    if(k === 'estoque') return state.items.filter(function(v){ return v.status !== 'vendido'; }).length;
+    return state.items.filter(function(v){ return v.status === k; }).length;
+  }
+  $('chips').innerHTML = defs.map(function(d){
+    return '<button type="button" class="chip" data-chip="' + d[0] + '" aria-pressed="' + (state.status === d[0]) + '">' +
+      esc(d[1]) + '<b>' + count(d[0]) + '</b></button>';
+  }).join('');
+}
+
+function visible(){
+  var q = norm(state.q).trim();
+  var list = state.items.filter(function(v){
+    if(state.status === 'estoque' && v.status === 'vendido') return false;
+    if(state.status !== 'estoque' && state.status !== 'todos' && v.status !== state.status) return false;
+    if(q){
+      var hay = norm([v.marca, v.modelo, v.versao, v.placa, v.cor].join(' '));
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  var s = state.sort;
+  list.sort(function(a,b){
+    if(s === 'parados') return days(b) - days(a);
+    if(s === 'preco-asc') return (+a.preco||0) - (+b.preco||0);
+    if(s === 'preco-desc') return (+b.preco||0) - (+a.preco||0);
+    if(s === 'margem') return margin(b) - margin(a);
+    return String(b.entrada).localeCompare(String(a.entrada));
+  });
+  return list;
+}
+
+function cardHtml(v){
+  var m = margin(v);
+  var pct = (+v.preco > 0) ? num.format(m / v.preco * 100) + '%' : '—';
+  var d = days(v);
+  var dcls = d >= 90 ? 'd90' : (d >= 60 ? 'd60' : '');
+  var daysHtml = v.status === 'vendido' ? '' : '<span class="days ' + dcls + '">' + d + (d === 1 ? ' dia' : ' dias') + ' no pátio</span>';
+  var photo = v.foto
+    ? '<img src="' + esc(v.foto) + '" alt="' + esc(v.marca + ' ' + v.modelo) + '">'
+    : '<span class="ph">' + esc(v.marca) + '</span>';
+  var specs = [];
+  if(v.anoFab || v.anoMod) specs.push((v.anoFab || '—') + '/' + (v.anoMod || '—'));
+  if(v.km || v.km === 0) specs.push(int.format(v.km) + ' km');
+  if(v.combustivel) specs.push(v.combustivel);
+  if(v.cambio) specs.push(v.cambio);
+  if(v.cor) specs.push(v.cor);
+  var plate = v.placa
+    ? '<span class="plate" aria-label="Placa ' + esc(v.placa) + '"><span class="plate-top">BRASIL</span><span class="plate-no">' + esc(v.placa) + '</span></span>'
+    : '<span></span>';
+  var opts = Object.keys(STATUS).map(function(k){
+    return '<option value="' + k + '"' + (v.status === k ? ' selected' : '') + '>' + STATUS[k] + '</option>';
+  }).join('');
+  return '<article class="card">' +
+    '<div class="photo">' + photo + '<span class="pill s-' + v.status + '">' + STATUS[v.status] + (v.exemplo ? ' · exemplo' : '') + '</span></div>' +
+    '<div class="cbody">' +
+      '<div><h3>' + esc(v.marca + ' ' + v.modelo) + '</h3>' + (v.versao ? '<p class="ver">' + esc(v.versao) + '</p>' : '') + '</div>' +
+      '<p class="specs">' + esc(specs.join(' · ')) + '</p>' +
+      '<div class="meta">' + plate + daysHtml + '</div>' +
+      '<dl class="money">' +
+        '<div><dt>' + (v.status === 'vendido' ? 'Vendido por' : 'Preço') + '</dt><dd>' + brl.format(+v.preco || 0) + '</dd></div>' +
+        '<div><dt>Custo total</dt><dd>' + brl.format(cost(v)) + '</dd></div>' +
+        '<div><dt>' + (v.status === 'vendido' ? 'Lucro' : 'Margem') + '</dt><dd class="' + (m < 0 ? 'neg' : 'pos') + '">' + brl.format(m) + '<small>' + pct + '</small></dd></div>' +
+      '</dl>' +
+      '<div class="foot">' +
+        '<label class="sr" for="st-' + esc(v.id) + '">Situação</label>' +
+        '<select id="st-' + esc(v.id) + '" data-status="' + esc(v.id) + '">' + opts + '</select>' +
+        '<button type="button" class="btn small" data-edit="' + esc(v.id) + '">Editar</button>' +
+      '</div>' +
+    '</div></article>';
+}
+
+function renderGrid(){
+  var g = $('grid');
+  if(!state.items.length){
+    g.innerHTML = '<div class="empty"><h2>Nenhum veículo cadastrado</h2><p>Cadastre o primeiro carro para acompanhar custo, preço, margem e quantos dias ele está parado no pátio.</p>' +
+      '<button type="button" class="btn primary" data-new="1">+ Novo veículo</button></div>';
+    return;
+  }
+  var list = visible();
+  if(!list.length){
+    g.innerHTML = '<div class="empty"><h2>Nada encontrado</h2><p>Nenhum veículo corresponde à busca e ao filtro atuais.</p>' +
+      '<button type="button" class="btn" data-clear="1">Limpar filtros</button></div>';
+    return;
+  }
+  g.innerHTML = list.map(cardHtml).join('');
+}
+
+function renderAll(){ renderNotes(); renderStats(); renderChips(); renderGrid(); }
+
+/* ---------- formulário ---------- */
+function find(id){
+  for(var i = 0; i < state.items.length; i++){ if(state.items[i].id === id) return state.items[i]; }
+  return null;
+}
+
+function updateFoto(){
+  var p = $('foto-prev');
+  if(tmpFoto){
+    p.innerHTML = '<img src="' + esc(tmpFoto) + '" alt="Foto do veículo">';
+    $('foto-remove').hidden = false;
+  }else{
+    p.textContent = 'Sem foto';
+    $('foto-remove').hidden = true;
+  }
+}
+
+function updateMargin(){
+  var c = (+$('f-custo').value || 0) + (+$('f-preparo').value || 0);
+  var p = +$('f-preco').value || 0;
+  var m = p - c;
+  var pct = p > 0 ? ' (' + num.format(m / p * 100) + '%)' : '';
+  $('margin-line').innerHTML = '<span>Custo total: <strong>' + brl.format(c) + '</strong></span>' +
+    '<span>Margem prevista: <strong class="' + (m < 0 ? 'neg' : 'pos') + '">' + brl.format(m) + pct + '</strong></span>';
+}
+
+function openForm(id){
+  var v = id ? find(id) : null;
+  state.editing = v ? v.id : null;
+  state.confirmDel = false;
+  lastFocus = document.activeElement;
+  $('form-title').textContent = v ? 'Editar veículo' : 'Novo veículo';
+  FIELDS.forEach(function(f){
+    var el = $('f-' + f);
+    var val = v ? v[f] : '';
+    if(!v){
+      if(f === 'status') val = 'preparacao';
+      if(f === 'entrada') val = dateStr(new Date());
+      if(f === 'combustivel') val = 'Flex';
+      if(f === 'cambio') val = 'Manual';
+    }
+    el.value = (val == null) ? '' : val;
+  });
+  tmpFoto = v ? (v.foto || '') : '';
+  $('f-foto').value = '';
+  updateFoto();
+  updateMargin();
+  var del = $('btn-del');
+  del.hidden = !v;
+  del.textContent = 'Excluir';
+  del.classList.remove('armed');
+  $('overlay').hidden = false;
+  setTimeout(function(){ $('f-marca').focus(); }, 30);
+}
+
+function closeForm(){
+  $('overlay').hidden = true;
+  state.editing = null;
+  state.confirmDel = false;
+  if(lastFocus && lastFocus.focus){ try{ lastFocus.focus(); }catch(e){} }
+}
+
+function submitForm(e){
+  e.preventDefault();
+  var data = {};
+  FIELDS.forEach(function(f){
+    var val = $('f-' + f).value;
+    if(NUMERIC[f]){
+      data[f] = val === '' ? '' : (Number(val) || 0);
+    }else{
+      data[f] = String(val).trim();
+    }
+  });
+  data.placa = data.placa.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+  data.km = data.km === '' ? 0 : data.km;
+  data.custo = data.custo === '' ? 0 : data.custo;
+  data.preparo = data.preparo === '' ? 0 : data.preparo;
+  data.preco = data.preco === '' ? 0 : data.preco;
+  data.foto = tmpFoto;
+
+  var msg;
+  if(state.editing){
+    var v = find(state.editing);
+    if(v){
+      Object.keys(data).forEach(function(k){ v[k] = data[k]; });
+      delete v.exemplo;
+    }
+    msg = 'Veículo atualizado.';
+  }else{
+    data.id = uid();
+    state.items.unshift(data);
+    msg = 'Veículo cadastrado.';
+  }
+  var ok = save();
+  closeForm();
+  renderAll();
+  toast(ok ? msg : 'Salvo só nesta sessão: o navegador não deixou gravar.');
+}
+
+function deleteCurrent(){
+  var btn = $('btn-del');
+  if(!state.confirmDel){
+    state.confirmDel = true;
+    btn.textContent = 'Confirmar exclusão';
+    btn.classList.add('armed');
+    return;
+  }
+  var id = state.editing;
+  state.items = state.items.filter(function(v){ return v.id !== id; });
+  save();
+  closeForm();
+  renderAll();
+  toast('Veículo excluído.');
+}
+
+function handlePhoto(){
+  var f = $('f-foto').files && $('f-foto').files[0];
+  if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    var img = new Image();
+    img.onload = function(){
+      var max = 720;
+      var s = Math.min(1, max / Math.max(img.width, img.height));
+      var c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * s));
+      c.height = Math.max(1, Math.round(img.height * s));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      try{ tmpFoto = c.toDataURL('image/jpeg', 0.72); }catch(err){ toast('Não foi possível processar essa imagem.'); return; }
+      updateFoto();
+    };
+    img.onerror = function(){ toast('Não foi possível ler essa imagem.'); };
+    img.src = r.result;
+  };
+  r.onerror = function(){ toast('Não foi possível ler esse arquivo.'); };
+  r.readAsDataURL(f);
+}
+
+/* ---------- eventos ---------- */
+$('btn-new').addEventListener('click', function(){ openForm(null); });
+$('btn-cancel').addEventListener('click', closeForm);
+$('btn-del').addEventListener('click', deleteCurrent);
+$('form').addEventListener('submit', submitForm);
+$('f-foto').addEventListener('change', handlePhoto);
+$('foto-remove').addEventListener('click', function(){ tmpFoto = ''; $('f-foto').value = ''; updateFoto(); });
+['f-custo','f-preparo','f-preco'].forEach(function(id){ $(id).addEventListener('input', updateMargin); });
+$('f-placa').addEventListener('input', function(e){
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Za-z0-9]/g, '').slice(0, 7);
+});
+$('overlay').addEventListener('mousedown', function(e){ if(e.target === $('overlay')) closeForm(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('overlay').hidden) closeForm(); });
+
+$('q').addEventListener('input', function(e){ state.q = e.target.value; renderGrid(); });
+$('sort').addEventListener('change', function(e){ state.sort = e.target.value; renderGrid(); });
+$('chips').addEventListener('click', function(e){
+  var b = e.target.closest('[data-chip]');
+  if(!b) return;
+  state.status = b.getAttribute('data-chip');
+  renderChips();
+  renderGrid();
+});
+$('notes').addEventListener('click', function(e){
+  if(e.target.closest('#clear-ex')){
+    state.items = state.items.filter(function(v){ return !v.exemplo; });
+    save();
+    renderAll();
+    toast('Exemplos removidos.');
+  }
+});
+$('grid').addEventListener('click', function(e){
+  var ed = e.target.closest('[data-edit]');
+  if(ed){ openForm(ed.getAttribute('data-edit')); return; }
+  if(e.target.closest('[data-new]')){ openForm(null); return; }
+  if(e.target.closest('[data-clear]')){
+    state.q = ''; state.status = 'estoque'; $('q').value = '';
+    renderChips(); renderGrid();
+  }
+});
+$('grid').addEventListener('change', function(e){
+  var s = e.target.closest('select[data-status]');
+  if(!s) return;
+  var v = find(s.getAttribute('data-status'));
+  if(!v) return;
+  v.status = s.value;
+  save();
+  renderAll();
+  toast('Situação alterada para "' + STATUS[v.status] + '".');
+});
+
+/* ---------- início ---------- */
+var stored = load();
+state.items = stored === null ? seed() : stored;
+if(stored === null) save();
+renderAll();
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="patio-guard.js"></script>
+</body>
+</html>
