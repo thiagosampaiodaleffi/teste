@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://fipe.parallelum.com.br; form-action 'self'; base-uri 'self'; object-src 'none'">
 <title>Pátio · Avaliação de veículos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,15 +24,16 @@
   <section id="view-list" aria-labelledby="t-list">
     <div class="page-h">
       <div><p class="eyebrow">Módulo</p><h1 id="t-list">Avaliação de veículos</h1><p class="muted">Registre avarias, estime os reparos e calcule o investimento total de cada veículo.</p></div>
-      <button type="button" class="btn primary" id="btn-nova">+ Nova avaliação</button>
+      <div class="actions"><button type="button" class="btn" id="btn-equipe">Equipe</button><button type="button" class="btn primary" id="btn-nova">+ Nova avaliação</button></div>
     </div>
-    <div id="list" class="list"></div>
+    <div id="migrar" class="banner" hidden></div>
+    <div id="list" class="list" aria-live="polite"></div>
   </section>
 
   <!-- EDITOR -->
   <section id="view-edit" hidden aria-labelledby="t-edit">
     <div class="page-h">
-      <div><p class="eyebrow">Avaliação</p><h1 id="t-edit">Novo veículo</h1><p class="muted" id="saved-at">As alterações são salvas automaticamente.</p></div>
+      <div><p class="eyebrow">Avaliação</p><h1 id="t-edit">Novo veículo</h1><p class="muted" id="saved-at">As alterações são salvas automaticamente.</p><p class="muted small" id="hist"></p></div>
       <div class="actions">
         <button type="button" class="btn" id="btn-voltar">← Todas as avaliações</button>
         <button type="button" class="btn primary" id="btn-pdf">Gerar relatório PDF</button>
@@ -42,15 +43,31 @@
     <div class="grid">
       <div class="col-main">
         <section class="card pad" aria-labelledby="h-veic">
-          <h2 id="h-veic">Dados do veículo</h2>
+          <div class="card-h"><h2 id="h-veic">Dados do veículo</h2>
+            <label class="status-sel">Status<select id="v-status"><option value="em_avaliacao">Em avaliação</option><option value="aprovado">Aprovado</option><option value="reprovado">Reprovado</option></select></label></div>
           <div class="fields">
+            <label class="fld">Placa<input id="v-placa" autocomplete="off" maxlength="8" placeholder="ABC1D23 ou ABC-1234" aria-describedby="placa-h"><small id="placa-h" class="muted">Informe a placa (antiga ou Mercosul).</small></label>
+            <div class="fld wide2"><button type="button" class="btn" id="btn-fipe" aria-expanded="false" aria-controls="fipe-box">Identificar veículo pela tabela FIPE</button><small class="muted">A consulta direta pela placa exige serviço pago; aqui você escolhe o veículo na tabela FIPE (gratuita).</small></div>
+            <div class="fipe wide" id="fipe-box" hidden>
+              <div class="fipe-grid">
+                <label class="fld">Tipo<select id="fp-tipo"></select></label>
+                <label class="fld">Marca<select id="fp-marca" disabled></select></label>
+                <label class="fld">Modelo e versão<input id="fp-filtro" placeholder="Filtrar (ex.: civic exl)" disabled aria-label="Filtrar modelos"><select id="fp-modelo" disabled></select></label>
+                <label class="fld">Ano e combustível<select id="fp-ano" disabled></select></label>
+              </div>
+              <p class="fipe-st" id="fp-st" role="status" aria-live="polite"></p>
+            </div>
             <label class="fld">Marca<input id="v-marca" autocomplete="off" placeholder="Ex.: Honda"></label>
-            <label class="fld">Modelo<input id="v-modelo" autocomplete="off" placeholder="Ex.: Civic EXL"></label>
-            <label class="fld">Ano<input id="v-ano" inputmode="numeric" maxlength="4" placeholder="2020"></label>
-            <label class="fld">Placa<input id="v-placa" autocomplete="off" maxlength="8" placeholder="ABC1D23"></label>
+            <label class="fld">Modelo<input id="v-modelo" autocomplete="off" placeholder="Ex.: Civic"></label>
+            <label class="fld">Versão<input id="v-versao" autocomplete="off" placeholder="Ex.: Sedan EXL 2.0 Flex"></label>
+            <label class="fld">Ano de fabricação<input id="v-anofab" inputmode="numeric" maxlength="4" placeholder="2019"></label>
+            <label class="fld">Ano do modelo<input id="v-anomod" inputmode="numeric" maxlength="4" placeholder="2020"></label>
+            <label class="fld">Combustível<input id="v-comb" autocomplete="off" placeholder="Flex"></label>
+            <label class="fld">Motorização<input id="v-motor" autocomplete="off" placeholder="2.0 16V"></label>
             <label class="fld">Quilometragem<input id="v-km" inputmode="numeric" placeholder="45000"></label>
             <label class="fld">Cor<input id="v-cor" autocomplete="off" placeholder="Prata"></label>
-            <label class="fld wide">Valor de compra (R$)<input id="v-compra" inputmode="decimal" placeholder="0,00"></label>
+            <label class="fld">Valor de compra (R$)<input id="v-compra" inputmode="decimal" placeholder="0,00"></label>
+            <label class="fld">Preço de venda pretendido (R$)<input id="v-venda" inputmode="decimal" placeholder="0,00"></label>
           </div>
         </section>
 
@@ -78,12 +95,13 @@
           <h2 id="h-res">Resumo financeiro</h2>
           <dl class="sum" id="summary"></dl>
           <p class="hint" id="sum-note" hidden></p>
+          <p class="hint" id="margin-note">Margem = preço de venda − investimento total. Não inclui outras despesas operacionais (comissões, impostos, documentação, financeiro etc.).</p>
           <button type="button" class="btn danger" id="btn-del">Excluir avaliação</button>
         </section>
       </aside>
     </div>
   </section>
-  <p class="foot muted">Os dados desta avaliação ficam salvos neste navegador, na sua conta.</p>
+  <p class="foot muted">As avaliações e fotos ficam salvas na sua conta e são compartilhadas com a equipe da loja.</p>
 </main>
 
 <!-- FORMULÁRIO DE REPARO -->
@@ -110,12 +128,29 @@
   </form>
 </div>
 
+<div class="modal" id="team" hidden role="dialog" aria-modal="true" aria-labelledby="team-title">
+  <div class="modal-bg" data-close-team></div>
+  <div class="modal-p">
+    <div class="m-h"><div><span class="cat">Acesso compartilhado</span><h3 id="team-title">Equipe da loja</h3></div><button type="button" class="x" data-close-team aria-label="Fechar">✕</button></div>
+    <p class="muted small">Todos os funcionários listados veem e editam as avaliações desta loja. A pessoa precisa já ter criado a conta no Pátio.</p>
+    <ul class="members" id="members"></ul>
+    <form id="team-form" class="team-form" novalidate hidden>
+      <label class="fld">Adicionar funcionário (e-mail da conta)<input id="team-email" type="email" autocomplete="off" placeholder="nome@loja.com.br"></label>
+      <label class="fld">Papel<select id="team-papel"><option value="avaliador">Avaliador</option><option value="admin">Administrador</option></select></label>
+      <button type="submit" class="btn primary">Adicionar</button>
+    </form>
+    <p class="err" id="team-err" role="alert" hidden></p>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="supabase-client.js"></script>
 <script src="auth-guard.js"></script>
+<script src="avaliacao/data.js"></script>
+<script src="avaliacao/fipe.js"></script>
 <script src="avaliacao/car3d.js"></script>
 <script src="avaliacao/pdf.js"></script>
 <script src="avaliacao/app.js"></script>
