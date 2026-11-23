@@ -26,9 +26,11 @@
   function dateBR(ts) { return ts ? new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'; }
   function dateTimeBR(ts) { return ts ? dateBR(ts) + ' às ' + new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—'; }
   function title(av) { var t = ((av.marca || '') + ' ' + (av.modelo || '')).trim(); return t || 'Novo veículo'; }
+  var PAPEIS = { admin: 'Administrador', gerente: 'Gerente', avaliador: 'Avaliador', vendedor: 'Vendedor', financeiro: 'Financeiro' };
   function errMsg(e) {
     var m = String((e && (e.message || e.code)) || '');
     if (/usuario_nao_encontrado/.test(m)) return 'Esse e-mail ainda não tem conta no Pátio. Peça para a pessoa criar a conta e tente de novo.';
+    if (/papel_invalido/.test(m)) return 'Perfil inválido.';
     if (/somente_admin/.test(m)) return 'Só administradores podem alterar a equipe.';
     if (/ultimo_admin/.test(m)) return 'A loja precisa ter pelo menos um administrador.';
     if (/row-level security|permission denied|42501/.test(m)) return 'Você não tem permissão para essa ação.';
@@ -346,7 +348,7 @@
   function renderTeam() {
     var admin = D.state.papel === 'admin';
     $('members').innerHTML = D.state.membros.map(function (m) {
-      return '<li><span class="who"><b>' + esc(m.nome || m.email) + (m.user_id === D.state.userId ? ' (você)' : '') + '</b><small>' + esc(m.email) + ' · ' + (m.papel === 'admin' ? 'Administrador' : 'Avaliador') + '</small></span>' +
+      return '<li><span class="who"><b>' + esc(m.nome || m.email) + (m.user_id === D.state.userId ? ' (você)' : '') + '</b><small>' + esc(m.email) + ' · ' + (PAPEIS[m.papel] || m.papel) + '</small></span>' +
         (admin && m.user_id !== D.state.userId ? '<button type="button" class="btn small ghost" data-rmmember="' + m.user_id + '">Remover</button>' : '') + '</li>';
     }).join('');
     $('team-form').hidden = !admin; $('team-err').hidden = true;
