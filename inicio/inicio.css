@@ -90,7 +90,7 @@ section[aria-labelledby=h-main] .sec-h{position:absolute;width:1px;height:1px;ov
 .status .dot.ok{display:inline-block}
 
 .more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.mcard{display:flex;gap:16px;align-items:flex-start;text-align:left;padding:20px;border-radius:var(--r);background:rgba(255,255,255,.7);border:1px solid var(--line);cursor:pointer;
+.mcard{text-decoration:none;color:inherit;display:flex;gap:16px;align-items:flex-start;text-align:left;padding:20px;border-radius:var(--r);background:rgba(255,255,255,.7);border:1px solid var(--line);cursor:pointer;
   transition:transform .2s,box-shadow .2s,border-color .2s,background .2s;animation:rise .5s both}
 .mcard:hover{transform:translateY(-3px);background:#fff;box-shadow:var(--sh);border-color:#C9D5CC}
 .mcard .ico{width:44px;height:44px;border-radius:14px;background:var(--bg);color:var(--g6);box-shadow:none;border:1px solid var(--line);transition:background .2s,color .2s}

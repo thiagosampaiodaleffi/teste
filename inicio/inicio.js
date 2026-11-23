@@ -9,7 +9,7 @@
     { id: 'dashboard', t: 'Dashboard Executivo', d: 'Vendas, lucro, funil e metas da operação em uma única visão.', href: 'dashboard.html', status: 'ok', icon: 'chart', tag: 'Visão geral', featured: true },
     { id: 'estoque', t: 'Estoque de veículos', d: 'Cadastro, preços, status e giro de cada carro do pátio.', href: 'patio.html', status: 'ok', icon: 'car', tag: 'Operação', featured: true },
     { id: 'leads', t: 'Leads e atendimento', d: 'Funil comercial, agenda de visitas e retorno aos clientes.', status: 'soon', icon: 'users' },
-    { id: 'avaliacao', t: 'Avaliação de veículos', d: 'Precificação e cotação de seminovos na entrada.', status: 'lock', icon: 'check' },
+    { id: 'avaliacao', t: 'Avaliação de veículos', d: 'Registre avarias, estime reparos e calcule o investimento de cada veículo.', href: 'avaliacao.html', status: 'ok', icon: 'check' },
     { id: 'fiscal', t: 'Vendas e fiscal', d: 'Fechamento de vendas, financeiro e emissão de notas.', status: 'off', icon: 'receipt' },
     { id: 'fin', t: 'Financiamentos', d: 'Fichas, simulações e acompanhamento das propostas.', status: 'lock', icon: 'wallet' },
     { id: 'site', t: 'Site da loja', d: 'Vitrine online, destaques e anúncios do estoque.', status: 'lock', icon: 'globe' },
@@ -59,9 +59,10 @@
   }
   function moreCard(m) {
     var s = STATUS[m.status];
-    return '<button type="button" class="mcard ' + s.cls + '" data-m="' + m.id + '"><span class="ico">' + svg(m.icon) + '</span>' +
+    var tag = m.href ? 'a' : 'button', attrs = m.href ? ' href="' + m.href + '"' : ' type="button"';
+    return '<' + tag + attrs + ' class="mcard ' + s.cls + '" data-m="' + m.id + '"><span class="ico">' + svg(m.icon) + '</span>' +
       '<span class="m-b"><span class="m-t">' + esc(m.t) + '</span><span class="m-d">' + esc(m.d) + '</span>' +
-      '<span class="status ' + s.cls + '"><i class="dot ' + s.cls + '"></i>' + (m.status === 'lock' || m.status === 'off' ? '<span class="lk">' + svg('lock') + '</span>' : '') + s.l + '</span></span></button>';
+      '<span class="status ' + s.cls + '"><i class="dot ' + s.cls + '"></i>' + (m.status === 'lock' || m.status === 'off' ? '<span class="lk">' + svg('lock') + '</span>' : '') + s.l + '</span></span></' + tag + '>';
   }
 
   var modal, lastFocus;
@@ -106,7 +107,7 @@
     $('help-btn').onclick = helpModal;
     document.addEventListener('click', function (e) {
       if (e.target.closest('[data-close]')) { closeModal(); return; }
-      var c = e.target.closest('.mcard');
+      var c = e.target.closest('button.mcard');
       if (c) moduleModal(MODULES.filter(function (m) { return m.id === c.getAttribute('data-m'); })[0]);
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closeModal(); });

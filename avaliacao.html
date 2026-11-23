@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'">
+<title>Pátio · Avaliação de veículos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="avaliacao/avaliacao.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<header class="bar">
+  <a class="brand" href="inicio.html" aria-label="Pátio, página inicial"><span class="logo" aria-hidden="true"></span><b>Pátio</b></a>
+  <nav class="crumbs" aria-label="Você está em"><a href="inicio.html">Início</a><span aria-hidden="true">/</span><a href="avaliacao.html" id="crumb-root">Avaliação de veículos</a><span id="crumb-sep" aria-hidden="true" hidden>/</span><span id="crumb-cur" hidden></span></nav>
+  <div class="bar-r"><span class="av" id="av" aria-hidden="true">U</span><button type="button" class="btn ghost" id="btn-sair">Sair</button></div>
+</header>
+
+<main class="wrap" id="main">
+  <!-- LISTA -->
+  <section id="view-list" aria-labelledby="t-list">
+    <div class="page-h">
+      <div><p class="eyebrow">Módulo</p><h1 id="t-list">Avaliação de veículos</h1><p class="muted">Registre avarias, estime os reparos e calcule o investimento total de cada veículo.</p></div>
+      <button type="button" class="btn primary" id="btn-nova">+ Nova avaliação</button>
+    </div>
+    <div id="list" class="list"></div>
+  </section>
+
+  <!-- EDITOR -->
+  <section id="view-edit" hidden aria-labelledby="t-edit">
+    <div class="page-h">
+      <div><p class="eyebrow">Avaliação</p><h1 id="t-edit">Novo veículo</h1><p class="muted" id="saved-at">As alterações são salvas automaticamente.</p></div>
+      <div class="actions">
+        <button type="button" class="btn" id="btn-voltar">← Todas as avaliações</button>
+        <button type="button" class="btn primary" id="btn-pdf">Gerar relatório PDF</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col-main">
+        <section class="card pad" aria-labelledby="h-veic">
+          <h2 id="h-veic">Dados do veículo</h2>
+          <div class="fields">
+            <label class="fld">Marca<input id="v-marca" autocomplete="off" placeholder="Ex.: Honda"></label>
+            <label class="fld">Modelo<input id="v-modelo" autocomplete="off" placeholder="Ex.: Civic EXL"></label>
+            <label class="fld">Ano<input id="v-ano" inputmode="numeric" maxlength="4" placeholder="2020"></label>
+            <label class="fld">Placa<input id="v-placa" autocomplete="off" maxlength="8" placeholder="ABC1D23"></label>
+            <label class="fld">Quilometragem<input id="v-km" inputmode="numeric" placeholder="45000"></label>
+            <label class="fld">Cor<input id="v-cor" autocomplete="off" placeholder="Prata"></label>
+            <label class="fld wide">Valor de compra (R$)<input id="v-compra" inputmode="decimal" placeholder="0,00"></label>
+          </div>
+        </section>
+
+        <section class="card pad" aria-labelledby="h-3d">
+          <div class="card-h"><h2 id="h-3d">Identificação das avarias</h2>
+            <button type="button" class="btn primary" id="btn-foto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4zM12 17a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2z"/></svg>Fotografar avaria</button>
+          </div>
+          <div class="views" role="group" aria-label="Vistas do veículo">
+            <button type="button" class="chip" data-view="padrao">3/4 frente</button><button type="button" class="chip" data-view="frente">Frente</button><button type="button" class="chip" data-view="direita">Direita</button><button type="button" class="chip" data-view="traseira">Traseira</button><button type="button" class="chip" data-view="esquerda">Esquerda</button><button type="button" class="chip" data-view="topo">Topo</button>
+          </div>
+          <div class="stage"><canvas id="car" tabindex="0" aria-label="Veículo em 3D. Use as setas para girar e toque nos pontos para registrar um reparo."></canvas></div>
+          <p class="hint">Arraste para girar · toque em um ponto <b>+</b> para registrar o reparo daquela região · pontos vermelhos já têm reparos.</p>
+          <input type="file" id="file" accept="image/*" capture="environment" hidden>
+        </section>
+
+        <section class="card pad" aria-labelledby="h-rep">
+          <div class="card-h"><h2 id="h-rep">Reparos registrados <span class="count" id="rep-count">0</span></h2>
+            <button type="button" class="btn" id="btn-add">+ Adicionar sem foto</button></div>
+          <div id="repairs" class="repairs"></div>
+        </section>
+      </div>
+
+      <aside class="col-side" aria-labelledby="h-res">
+        <section class="card pad sticky">
+          <h2 id="h-res">Resumo financeiro</h2>
+          <dl class="sum" id="summary"></dl>
+          <p class="hint" id="sum-note" hidden></p>
+          <button type="button" class="btn danger" id="btn-del">Excluir avaliação</button>
+        </section>
+      </aside>
+    </div>
+  </section>
+  <p class="foot muted">Os dados desta avaliação ficam salvos neste navegador, na sua conta.</p>
+</main>
+
+<!-- FORMULÁRIO DE REPARO -->
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal-bg" data-close></div>
+  <form class="modal-p" id="form" novalidate>
+    <div class="m-h"><div><span class="cat">Categoria · Reparos</span><h3 id="m-title">Registrar reparo</h3></div><button type="button" class="x" data-close aria-label="Fechar">✕</button></div>
+    <div class="photo" id="photo-box">
+      <div class="photo-view" id="photo-view"><span class="muted">Nenhuma fotografia</span></div>
+      <div class="photo-act"><button type="button" class="btn" id="photo-pick">Tirar ou escolher foto</button><button type="button" class="btn ghost" id="photo-del" hidden>Remover foto</button></div>
+    </div>
+    <div class="fields">
+      <label class="fld">Região do veículo afetada<select id="r-regiao" required></select></label>
+      <label class="fld">Tipo de avaria<select id="r-tipo" required></select></label>
+      <label class="fld wide">Descrição do problema<textarea id="r-desc" rows="2" placeholder="O que precisa ser feito para preparar o veículo"></textarea></label>
+      <label class="check wide"><input type="checkbox" id="r-direto"> Informar o custo total diretamente (sem separar peças e mão de obra)</label>
+      <label class="fld">Custo estimado das peças (R$)<input id="r-pecas" inputmode="decimal" placeholder="0,00"></label>
+      <label class="fld">Custo estimado da mão de obra (R$)<input id="r-mao" inputmode="decimal" placeholder="0,00"></label>
+      <label class="fld wide">Custo total do reparo (R$)<input id="r-total" inputmode="decimal" placeholder="0,00" readonly aria-describedby="r-total-h"><small id="r-total-h" class="muted">Calculado automaticamente: peças + mão de obra.</small></label>
+      <label class="fld wide">Observações adicionais<textarea id="r-obs" rows="2"></textarea></label>
+    </div>
+    <p class="err" id="r-err" role="alert" hidden></p>
+    <div class="m-act"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="submit" class="btn primary" id="r-save">Salvar reparo</button></div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth-guard.js"></script>
+<script src="avaliacao/car3d.js"></script>
+<script src="avaliacao/pdf.js"></script>
+<script src="avaliacao/app.js"></script>
+</body>
+</html>
